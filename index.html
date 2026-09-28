@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>向量场可视化 · 散度 / 旋度 / 梯度 / 环量</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <h1>向量场可视化</h1>
+  <p class="sub">每个量的正负都能直观看见 —— 散度 ∇·F · 旋度 ∇×F · 梯度 ∇f · 环量 ∮F·dr</p>
+</header>
+
+<main>
+  <div class="stageCol">
+    <section class="card stage">
+      <canvas id="cv"></canvas>
+      <div class="stage-foot">点击画布移动观测点（默认原点）；圆半径 R=1，环量沿此圆逆时针积分</div>
+    </section>
+    <section class="card stage">
+      <div class="qrow">
+        <div class="qcell">
+          <canvas id="hmDiv" class="hm"></canvas>
+          <div class="qcap" id="capDiv">散度 ∇·F</div>
+          <div class="qsub" id="subDiv"></div>
+        </div>
+        <div class="qcell">
+          <canvas id="hmCurl" class="hm"></canvas>
+          <div class="qcap" id="capCurl">旋度 ∇×F</div>
+          <div class="qsub" id="subCurl"></div>
+        </div>
+        <div class="qcell">
+          <canvas id="lnCirc" class="hm"></canvas>
+          <div class="qcap">环量 C(r) = ∮<sub>|p|=r</sub> F·dr</div>
+          <div class="qsub" id="subCirc"></div>
+        </div>
+      </div>
+      <div class="stage-foot">左/中两图是散度、旋度在全区域的分布（点击可移动观测点）；右图是半径 r 圆周的环量曲线</div>
+    </section>
+
+    <section class="card stage">
+      <div class="surfbar">
+        <select id="surfSel">
+          <option value="auto">曲面：原函数 f / 势函数 φ</option>
+          <option value="div">曲面：散度场 ∇·F</option>
+          <option value="curl">曲面：旋度场 ∇×F</option>
+          <option value="speed">曲面：流速场 |F|</option>
+        </select>
+      </div>
+      <canvas id="sv"></canvas>
+      <div class="stage-foot" id="svCap">拖拽旋转 · 曲面高度即函数值，绿为正、红为负；地面上椭圆是 R=1 圆</div>
+    </section>
+  </div>
+
+  <aside class="panel">
+    <div class="card">
+      <div class="tabs">
+        <button id="tabVec" class="tab active" type="button">向量场 F = (P, Q)</button>
+        <button id="tabScalar" class="tab" type="button">标量场 f → ∇f</button>
+      </div>
+      <div id="vecRow">
+        <label class="field">P(x,y) = <input id="inP" spellcheck="false" autocomplete="off"><span class="err"></span></label>
+        <label class="field">Q(x,y) = <input id="inQ" spellcheck="false" autocomplete="off"><span class="err"></span></label>
+      </div>
+      <div id="scalarRow" hidden>
+        <label class="field">f(x,y) = <input id="inf" spellcheck="false" autocomplete="off"><span class="err"></span></label>
+      </div>
+      <div id="preview"></div>
+      <div class="keypad" id="keypad"></div>
+      <details class="help">
+        <summary>语法说明</summary>
+        <p>
+          · 运算符 <code>+ − × ÷ ^ ( )</code>，也可写 <code>* / **</code>；乘号可省略：<code>2x</code>、<code>x y</code>、<code>x(y+1)</code>、<code>xy</code><br>
+          · 常数 <code>pi</code>（或 π）、<code>e</code>；变量仅 <code>x</code>、<code>y</code><br>
+          · 函数一律带括号：<code>sin(x)</code>、<code>exp(-x^2)</code>、<code>ln(x)</code>、<code>√(x^2+y^2)</code><br>
+          · 支持：sin cos tan asin acos atan atan2 sinh cosh tanh asinh acosh atanh sec csc cot
+            exp ln log lg log10 log2 sqrt √ cbrt abs sign floor ceil round trunc
+            min(a,b,…) max pow mod(a,b) hypot clamp(x,lo,hi) step(edge,x)
+        </p>
+      </details>
+    </div>
+
+    <div class="card">
+      <h3>预设</h3>
+      <div class="presets" id="presetVec"></div>
+      <div class="presets" id="presetScalar" hidden></div>
+    </div>
+
+    <div class="card">
+      <h3>数值<span id="probeLbl"></span></h3>
+      <div class="metrics" id="metrics"></div>
+      <p class="note">散度 / 旋度在观测点处数值微分；环量沿 R=1 圆周数值积分。
+        由格林公式 ∮F·dr = ∬(∇×F)dA，均匀场中环量 ≈ 旋度 × π。</p>
+    </div>
+
+    <div class="card">
+      <h3>显示</h3>
+      <div class="controls">
+        <button id="btnPlay" type="button">⏸ 暂停</button>
+        <label>速度 <input id="speed" type="range" min="0.1" max="4" step="0.1" value="1"></label>
+        <label>粒子
+          <select id="pcount">
+            <option value="300">300</option>
+            <option value="700" selected>700</option>
+            <option value="1500">1500</option>
+          </select></label>
+        <label><input type="checkbox" id="chkArrows" checked> 箭头</label>
+        <label><input type="checkbox" id="chkFlow" checked> 流线粒子</label>
+        <label><input type="checkbox" id="chkNorm"> 箭头归一化</label>
+        <label id="contourRow" hidden><input type="checkbox" id="chkContour" checked> 等值线</label>
+        <label>背景 <select id="bgSel"></select></label>
+      </div>
+    </div>
+  </aside>
+</main>
+
+<footer>
+  <p>∇·F = ∂P/∂x + ∂Q/∂y　·　∇×F = ∂Q/∂x − ∂P/∂y　·　∇f = (∂f/∂x, ∂f/∂y)　·　∮F·dr = ∬(∇×F)dA（格林公式）</p>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>

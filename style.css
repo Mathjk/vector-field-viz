@@ -1,0 +1,207 @@
+:root {
+  --bg: #f4f6f8;
+  --card: #ffffff;
+  --ink: #1e293b;
+  --muted: #64748b;
+  --accent: #0f766e;
+  --pos: #0f766e;
+  --neg: #b91c1c;
+  --line: #e2e8f0;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font: 15px/1.6 "Segoe UI", "Microsoft YaHei", system-ui, sans-serif;
+}
+
+header {
+  padding: 22px 28px 10px;
+}
+header h1 { margin: 0; font-size: 22px; font-weight: 650; }
+header .sub { margin: 4px 0 0; color: var(--muted); font-size: 13.5px; }
+
+main {
+  display: flex;
+  gap: 18px;
+  padding: 12px 28px 24px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, .05);
+}
+
+/* ---------- 画布 ---------- */
+.stageCol {
+  display: flex; flex-direction: column; gap: 14px;
+  flex: 1 1 560px; min-width: 320px; max-width: 660px;
+}
+#cv {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 8px;
+  cursor: crosshair;
+}
+#sv {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: 8px;
+  cursor: grab;
+}
+#sv:active { cursor: grabbing; }
+.stage-foot { margin-top: 8px; font-size: 12.5px; color: var(--muted); }
+
+/* ---------- 量场分布小图 ---------- */
+.qrow { display: flex; gap: 12px; }
+.qcell { flex: 1; min-width: 0; }
+.hm {
+  display: block; width: 100%; aspect-ratio: 1;
+  border-radius: 8px; border: 1px solid var(--line);
+  cursor: crosshair; background: #fbfdff;
+}
+.qcap { margin-top: 6px; font-size: 12.5px; font-weight: 600; color: var(--ink); text-align: center; }
+.qsub { font-size: 11.5px; color: var(--muted); text-align: center; font-family: "Cascadia Code", Consolas, monospace; }
+.surfbar { margin-bottom: 8px; }
+.surfbar select { font-size: 13px; padding: 4px 8px; }
+
+/* ---------- 右侧面板 ---------- */
+.panel {
+  flex: 0 1 430px;
+  min-width: 300px;
+  max-width: 460px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  position: sticky;
+  top: 14px;
+  max-height: calc(100vh - 28px);
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+}
+/* 公式输入卡在面板内再钉一层: 滚动时也常驻顶部 */
+.panel > .card:first-child {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  box-shadow: 0 4px 10px rgba(15, 23, 42, .08);
+}
+.panel h3 { margin: 0 0 10px; font-size: 14.5px; font-weight: 650; }
+
+.tabs { display: flex; gap: 8px; margin-bottom: 12px; }
+.tab {
+  flex: 1; padding: 7px 0; border: 1px solid var(--line); border-radius: 8px;
+  background: #f8fafc; color: var(--muted); cursor: pointer; font-size: 13.5px;
+}
+.tab.active { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+
+.field {
+  display: flex; align-items: baseline; gap: 8px; margin: 8px 0;
+  font-family: "Cambria Math", Georgia, serif; flex-wrap: wrap;
+}
+.field input {
+  flex: 1; min-width: 180px;
+  font: 14px/1.4 "Cascadia Code", Consolas, monospace;
+  padding: 6px 9px; border: 1px solid var(--line); border-radius: 7px;
+  background: #fbfdff;
+}
+.field input:focus { outline: 2px solid rgba(15, 118, 110, .35); border-color: var(--accent); }
+.field input.bad { border-color: var(--neg); background: #fff7f7; }
+.err { display: block; width: 100%; color: var(--neg); font-size: 12px; margin-top: 2px; }
+
+#preview {
+  min-height: 30px; margin: 10px 2px 4px;
+  font-family: "Cambria Math", Georgia, serif; font-size: 17px;
+  color: var(--ink);
+}
+#preview i { font-style: italic; font-family: "Cambria Math", Georgia, serif; }
+#preview sup { font-size: .72em; }
+.frac { display: inline-flex; flex-direction: column; text-align: center; vertical-align: middle; margin: 0 3px; }
+.frac > span { padding: 0 4px; }
+.frac > span:first-child { border-bottom: 1px solid currentColor; }
+.rtrad { border-top: 1px solid currentColor; padding: 0 2px; }
+
+/* ---------- 键盘 ---------- */
+.keypad {
+  display: grid; grid-template-columns: repeat(8, 1fr); gap: 5px; margin-top: 8px;
+}
+.keypad button {
+  padding: 5px 0; font-size: 12.5px; border: 1px solid var(--line);
+  border-radius: 6px; background: #f1f5f9; cursor: pointer; color: var(--ink);
+}
+.keypad button:hover { background: #e2e8f0; }
+.keypad button.wide { grid-column: span 2; }
+
+.help { margin-top: 10px; font-size: 12.5px; color: var(--muted); }
+.help summary { cursor: pointer; }
+.help code { background: #f1f5f9; padding: 0 4px; border-radius: 4px; font-size: 12px; }
+
+/* ---------- 预设 ---------- */
+.presets { display: flex; flex-wrap: wrap; gap: 7px; }
+.presets button {
+  padding: 5px 12px; border-radius: 999px; border: 1px solid #99d5cd;
+  background: #f0faf9; color: var(--accent); cursor: pointer; font-size: 13px;
+}
+.presets button:hover { background: #d9f2ef; }
+
+/* ---------- 数值 ---------- */
+.metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.chip {
+  border: 1px solid var(--line); border-radius: 9px; padding: 8px 12px;
+  display: flex; flex-direction: column; background: #fbfdff;
+}
+.chip .cap { font-size: 12px; color: var(--muted); }
+.chip .val { font: 600 20px/1.3 "Cascadia Code", Consolas, monospace; }
+.chip.pos .val { color: var(--pos); }
+.chip.neg .val { color: var(--neg); }
+.chip.zero .val { color: var(--muted); }
+.chip.na .val { color: #94a3b8; }
+#probeLbl { font-size: 12px; color: var(--muted); font-weight: 400; }
+.note { font-size: 12px; color: var(--muted); margin: 10px 0 0; }
+
+/* ---------- 控件 ---------- */
+.controls { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; font-size: 13.5px; }
+.controls label { display: inline-flex; align-items: center; gap: 6px; color: var(--ink); }
+.controls button {
+  padding: 5px 14px; border-radius: 7px; border: 1px solid var(--line);
+  background: #f1f5f9; cursor: pointer; font-size: 13px;
+}
+.controls button:hover { background: #e2e8f0; }
+input[type="range"] { width: 110px; accent-color: var(--accent); }
+select { font-size: 13px; padding: 3px 6px; border: 1px solid var(--line); border-radius: 6px; }
+input[type="checkbox"] { accent-color: var(--accent); }
+
+footer {
+  padding: 0 28px 26px; color: var(--muted); font-size: 13px;
+  font-family: "Cambria Math", Georgia, serif;
+}
+
+/* 窄屏 / 高倍缩放: 上下堆叠, 输入面板在最上方 */
+@media (max-width: 860px) {
+  main { padding: 10px 14px 20px; }
+  .panel {
+    order: -1;
+    position: static;
+    max-height: none;
+    overflow: visible;
+    max-width: 640px;
+    width: 100%;
+    margin: 0 auto;
+  }
+  .stageCol {
+    flex: none;
+    width: 100%;
+    max-width: 640px;
+    margin: 0 auto;
+  }
+}
